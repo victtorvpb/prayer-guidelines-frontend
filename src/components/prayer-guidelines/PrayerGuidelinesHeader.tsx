@@ -13,6 +13,9 @@ export function PrayerGuidelinesHeader({
   return (
     <>
       <S.ColorSwitcher>
+        <S.LogoInline>
+          <S.LogoImage src="/logo_zion.png" alt="Zion" />
+        </S.LogoInline>
         <S.ToggleGroup role="group" aria-label="Selecionar cor">
           <S.ToggleButton
             type="button"
