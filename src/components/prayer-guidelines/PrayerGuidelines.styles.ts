@@ -85,6 +85,21 @@ export const Header = styled.header`
   text-align: center;
 `;
 
+export const LogoInline = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+export const LogoImage = styled.img`
+  width: 64px;
+  height: auto;
+  display: block;
+
+  @media (max-width: 720px) {
+    width: 48px;
+  }
+`;
+
 export const Title = styled.h1`
   margin: 0;
   font-size: 1.75rem;
@@ -136,7 +151,7 @@ export const ToggleGroup = styled.div`
 
 export const ColorSwitcher = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
   width: 100%;

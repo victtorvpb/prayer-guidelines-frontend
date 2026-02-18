@@ -4,6 +4,7 @@ import { CONTENT_LIMITS } from "@/lib/constants";
 import { getPautaWarning, getVersiculoWarning } from "@/lib/prayer.utils";
 import { PautaField, VersiculoField } from "./index";
 import type { PrayerItem, LayoutMode } from "@/lib/types";
+import type { MutableRefObject } from "react";
 
 const PAUTA_LIMIT = CONTENT_LIMITS.PAUTA;
 const VERSICULO_LIMIT = CONTENT_LIMITS.VERSICULO;
@@ -12,9 +13,9 @@ export interface PrayerGuidelinesFormProps {
   prayerItems: PrayerItem[];
   layoutMode: LayoutMode;
   hasAnyContent: boolean;
-  pautaRefs: React.MutableRefObject<Record<number, HTMLTextAreaElement | null>>;
-  pautaWarningIndexRef: React.MutableRefObject<Record<number, number>>;
-  versiculoWarningIndexRef: React.MutableRefObject<Record<number, number>>;
+  pautaRefs: MutableRefObject<Record<number, HTMLTextAreaElement | null>>;
+  pautaWarningIndices: Record<number, number>;
+  versiculoWarningIndices: Record<number, number>;
   onUpdateItem: (
     id: number,
     field: "pauta" | "versiculo",
@@ -32,8 +33,8 @@ export function PrayerGuidelinesForm({
   layoutMode,
   hasAnyContent,
   pautaRefs,
-  pautaWarningIndexRef,
-  versiculoWarningIndexRef,
+  pautaWarningIndices,
+  versiculoWarningIndices,
   onUpdateItem,
   onRemoveItem,
   onAddItem,
@@ -57,6 +58,8 @@ export function PrayerGuidelinesForm({
               $active={layoutMode === "combined"}
               onClick={() => onLayoutModeChange("combined")}
               title="Layout mode: Juntos"
+              aria-label="Layout juntos"
+              aria-pressed={layoutMode === "combined"}
             >
               Juntos
             </S.LayoutButton>
@@ -65,6 +68,8 @@ export function PrayerGuidelinesForm({
               $active={layoutMode === "sequential"}
               onClick={() => onLayoutModeChange("sequential")}
               title="Layout mode: Sequencial"
+              aria-label="Layout sequencial"
+              aria-pressed={layoutMode === "sequential"}
             >
               Sequencial
             </S.LayoutButton>
@@ -76,9 +81,8 @@ export function PrayerGuidelinesForm({
           const number = index + 1;
           const pautaLength = item.pauta.trim().length;
           const versiculoLength = item.versiculo.trim().length;
-          const pautaWarningIndex = pautaWarningIndexRef.current[item.id] ?? 0;
-          const versiculoWarningIndex =
-            versiculoWarningIndexRef.current[item.id] ?? 0;
+          const pautaWarningIndex = pautaWarningIndices[item.id] ?? 0;
+          const versiculoWarningIndex = versiculoWarningIndices[item.id] ?? 0;
           const pautaWarning =
             pautaLength > PAUTA_LIMIT
               ? getPautaWarning(pautaWarningIndex)
