@@ -5,6 +5,7 @@ import { getPautaWarning, getVersiculoWarning } from "@/lib/prayer.utils";
 import { PautaField, VersiculoField } from "./index";
 import type { PrayerItem, LayoutMode } from "@/lib/types";
 import type { MutableRefObject } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const PAUTA_LIMIT = CONTENT_LIMITS.PAUTA;
 const VERSICULO_LIMIT = CONTENT_LIMITS.VERSICULO;
@@ -42,13 +43,15 @@ export function PrayerGuidelinesForm({
   onGenerateOutput,
   onLayoutModeChange,
 }: PrayerGuidelinesFormProps) {
+  const { t } = useLanguage();
+
   return (
     <>
       <S.CardTop>
         <S.CardTopLeft>
           <div>
-            <S.CardTopTitle>Formulario</S.CardTopTitle>
-            <S.CardTopHint>Organize as pautas</S.CardTopHint>
+            <S.CardTopTitle>{t.form.title}</S.CardTopTitle>
+            <S.CardTopHint>{t.form.hint}</S.CardTopHint>
           </div>
         </S.CardTopLeft>
         <S.CardTopRight>
@@ -57,21 +60,21 @@ export function PrayerGuidelinesForm({
               type="button"
               $active={layoutMode === "combined"}
               onClick={() => onLayoutModeChange("combined")}
-              title="Layout mode: Juntos"
-              aria-label="Layout juntos"
+              title={`Layout mode: ${t.form.layoutJuntos}`}
+              aria-label={t.form.layoutJuntos}
               aria-pressed={layoutMode === "combined"}
             >
-              Juntos
+              {t.form.layoutJuntos}
             </S.LayoutButton>
             <S.LayoutButton
               type="button"
               $active={layoutMode === "sequential"}
               onClick={() => onLayoutModeChange("sequential")}
-              title="Layout mode: Sequencial"
-              aria-label="Layout sequencial"
+              title={`Layout mode: ${t.form.layoutSequencial}`}
+              aria-label={t.form.layoutSequencial}
               aria-pressed={layoutMode === "sequential"}
             >
-              Sequencial
+              {t.form.layoutSequencial}
             </S.LayoutButton>
           </S.LayoutSelector>
         </S.CardTopRight>
@@ -100,13 +103,13 @@ export function PrayerGuidelinesForm({
               <S.SectionHeader>
                 <S.SectionTitle>
                   <S.SectionIndex>{number}</S.SectionIndex>
-                  Pauta {number}
+                  {t.form.pautaTitle(number)}
                 </S.SectionTitle>
                 {prayerItems.length > 1 ? (
                   <S.GhostButton
                     type="button"
                     onClick={() => onRemoveItem(item.id)}
-                    aria-label={`Remover pauta ${number}`}
+                    aria-label={t.form.removePauta(number)}
                   >
                     <X size={16} />
                   </S.GhostButton>
@@ -139,7 +142,7 @@ export function PrayerGuidelinesForm({
         <S.ButtonRow>
           <S.SecondaryButton type="button" onClick={onAddItem}>
             <Plus size={16} />
-            Adicionar pauta
+            {t.form.addPauta}
           </S.SecondaryButton>
           <S.PrimaryButton
             type="button"
@@ -147,15 +150,11 @@ export function PrayerGuidelinesForm({
             disabled={!hasAnyContent}
           >
             <Sparkles size={16} />
-            Gerar pautas
+            {t.form.generatePautas}
           </S.PrimaryButton>
         </S.ButtonRow>
 
-        {!hasAnyContent ? (
-          <S.Hint>
-            Dica: preencha ao menos um tema ou versiculo para gerar.
-          </S.Hint>
-        ) : null}
+        {!hasAnyContent ? <S.Hint>{t.form.emptyHint}</S.Hint> : null}
       </S.CardBody>
     </>
   );

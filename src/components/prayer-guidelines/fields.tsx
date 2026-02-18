@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Field = styled.div`
   display: flex;
@@ -136,56 +137,58 @@ const PautaField = ({
   textareaRef,
   hasWarning,
   warningMessage,
-}: PautaFieldProps) => (
-  <Field>
-    <SectionHeader>
-      <FieldLabel htmlFor={`pauta-${id}`}>Pauta (mensagens)</FieldLabel>
-      <ShortcutRow>
-        <ShortcutButton
-          type="button"
-          onClick={() => onFormat("*")}
-          aria-label="Negrito"
-        >
-          *B*
-        </ShortcutButton>
-        <ShortcutButton
-          type="button"
-          onClick={() => onFormat("_")}
-          aria-label="Italico"
-        >
-          _I_
-        </ShortcutButton>
-        <ShortcutButton
-          type="button"
-          onClick={() => onFormat("~")}
-          aria-label="Tachado"
-        >
-          ~S~
-        </ShortcutButton>
-        <ShortcutButton
-          type="button"
-          onClick={() => onFormat("`")}
-          aria-label="Monoespaco"
-        >
-          `M`
-        </ShortcutButton>
-      </ShortcutRow>
-    </SectionHeader>
-    <TextArea
-      id={`pauta-${id}`}
-      ref={textareaRef}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder="Ex: *Saude da familia* e direcao para a semana"
-      rows={3}
-      $hasWarning={hasWarning}
-    />
-    <HelperText>
-      Selecione o texto e clique em um atalho de formatacao.
-    </HelperText>
-    {warningMessage ? <WarningText>{warningMessage}</WarningText> : null}
-  </Field>
-);
+}: PautaFieldProps) => {
+  const { t } = useLanguage();
+
+  return (
+    <Field>
+      <SectionHeader>
+        <FieldLabel htmlFor={`pauta-${id}`}>{t.form.pautaLabel}</FieldLabel>
+        <ShortcutRow>
+          <ShortcutButton
+            type="button"
+            onClick={() => onFormat("*")}
+            aria-label={t.form.formatBold}
+          >
+            *B*
+          </ShortcutButton>
+          <ShortcutButton
+            type="button"
+            onClick={() => onFormat("_")}
+            aria-label={t.form.formatItalic}
+          >
+            _I_
+          </ShortcutButton>
+          <ShortcutButton
+            type="button"
+            onClick={() => onFormat("~")}
+            aria-label={t.form.formatStrikethrough}
+          >
+            ~S~
+          </ShortcutButton>
+          <ShortcutButton
+            type="button"
+            onClick={() => onFormat("`")}
+            aria-label={t.form.formatMonospace}
+          >
+            `M`
+          </ShortcutButton>
+        </ShortcutRow>
+      </SectionHeader>
+      <TextArea
+        id={`pauta-${id}`}
+        ref={textareaRef}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={t.form.pautaPlaceholder}
+        rows={3}
+        $hasWarning={hasWarning}
+      />
+      <HelperText>{t.form.formatHint}</HelperText>
+      {warningMessage ? <WarningText>{warningMessage}</WarningText> : null}
+    </Field>
+  );
+};
 
 const VersiculoField = ({
   id,
@@ -193,20 +196,26 @@ const VersiculoField = ({
   onChange,
   hasWarning,
   warningMessage,
-}: VersiculoFieldProps) => (
-  <Field>
-    <FieldLabel htmlFor={`versiculo-${id}`}>Versiculo (opcional)</FieldLabel>
-    <TextInput
-      id={`versiculo-${id}`}
-      value={value}
-      onChange={(event) => onChange(event.target.value)}
-      placeholder="Ex: Salmo 121:1-2"
-      autoComplete="off"
-      rows={2}
-      $hasWarning={hasWarning}
-    />
-    {warningMessage ? <WarningText>{warningMessage}</WarningText> : null}
-  </Field>
-);
+}: VersiculoFieldProps) => {
+  const { t } = useLanguage();
+
+  return (
+    <Field>
+      <FieldLabel htmlFor={`versiculo-${id}`}>
+        {t.form.versiculoLabel}
+      </FieldLabel>
+      <TextInput
+        id={`versiculo-${id}`}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder={t.form.versiculoPlaceholder}
+        autoComplete="off"
+        rows={2}
+        $hasWarning={hasWarning}
+      />
+      {warningMessage ? <WarningText>{warningMessage}</WarningText> : null}
+    </Field>
+  );
+};
 
 export { PautaField, VersiculoField };
