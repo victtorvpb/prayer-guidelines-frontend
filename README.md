@@ -1,6 +1,29 @@
-# React + TypeScript + Vite
+# Prayer Guidelines Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React + TypeScript + Vite application for managing prayer guidelines (pautas de oração) with dynamic form inputs and formatted output generation.
+
+## Getting Started
+
+This project uses pnpm as the package manager. To get started:
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+
+# Run linter
+pnpm lint
+```
+
+## Vite Plugins
 
 Currently, two official plugins are available:
 
