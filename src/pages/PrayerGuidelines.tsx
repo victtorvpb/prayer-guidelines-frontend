@@ -257,6 +257,54 @@ const CardTop = styled.div`
   align-items: center;
   justify-content: space-between;
   color: #f8fbfc;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  @media (max-width: 720px) {
+    padding: 14px 16px;
+  }
+`;
+
+const CardTopLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+`;
+
+const CardTopRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const LayoutSelector = styled.div`
+  display: flex;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px;
+  border-radius: 999px;
+`;
+
+const LayoutButton = styled.button<{ $active: boolean }>`
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  background: ${({ $active }) =>
+    $active ? "rgba(255, 255, 255, 0.9)" : "transparent"};
+  color: ${({ $active }) =>
+    $active ? "var(--accent)" : "rgba(255, 255, 255, 0.7)"};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${({ $active }) =>
+      $active ? "rgba(255, 255, 255, 1)" : "rgba(255, 255, 255, 0.2)"};
+  }
 `;
 
 const CardTopTitle = styled.h2`
@@ -279,7 +327,7 @@ const CardBody = styled.div`
   gap: 22px;
 `;
 
-const Section = styled.div`
+const Section = styled.div<{ $layoutMode: "combined" | "sequential" }>`
   border-radius: 22px;
   border: 1px solid rgba(216, 227, 234, 0.85);
   background: #ffffff;
@@ -289,13 +337,38 @@ const Section = styled.div`
   flex-direction: column;
   gap: 18px;
   animation: ${fadeUp} 0.6s ease both;
+
+  ${({ $layoutMode }) =>
+    $layoutMode === "combined"
+      ? css`
+          @media (min-width: 768px) {
+            display: grid;
+            grid-template-columns: 1fr 0.75fr;
+            grid-template-rows: auto auto auto;
+            gap: 18px;
+          }
+        `
+      : css`
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        `};
 `;
 
-const SectionHeader = styled.div`
+const SectionHeader = styled.div<{ $layoutMode?: "combined" | "sequential" }>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+
+  ${({ $layoutMode }) =>
+    $layoutMode === "combined"
+      ? css`
+          @media (min-width: 768px) {
+            grid-column: 1 / -1;
+          }
+        `
+      : ""};
 `;
 
 const SectionTitle = styled.div`
@@ -509,6 +582,9 @@ function PrayerGuidelines() {
   );
   const [needsRegenerate, setNeedsRegenerate] = useState(false);
   const [theme, setTheme] = useState<"green" | "blue">("green");
+  const [layoutMode, setLayoutMode] = useState<"combined" | "sequential">(
+    "combined",
+  );
   const pautaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
   const pautaWarningIndexRef = useRef<Record<number, number>>({});
   const versiculoWarningIndexRef = useRef<Record<number, number>>({});
@@ -563,17 +639,47 @@ function PrayerGuidelines() {
     }
   };
 
-  const output = prayerItems
-    .filter((item) => item.pauta.trim() || item.versiculo.trim())
-    .map((item, index) => {
-      const emoji = getEmojiNumber(index);
-      const pauta = item.pauta.trim();
-      const versiculo = item.versiculo.trim();
-      if (pauta && versiculo) return `${emoji} ${pauta}\n📖 ${versiculo}`;
-      if (pauta) return `${emoji} ${pauta}`;
-      return `${emoji} ${versiculo}`;
-    })
-    .join("\n\n");
+  const output = (() => {
+    const filtered = prayerItems.filter(
+      (item) => item.pauta.trim() || item.versiculo.trim(),
+    );
+
+    if (layoutMode === "sequential") {
+      // Modo sequencial: todas as pautas primeiro, depois todos os versículos
+      const pautas = filtered
+        .map((item, index) => {
+          const emoji = getEmojiNumber(index);
+          const pauta = item.pauta.trim();
+          if (pauta) return `${emoji} ${pauta}`;
+          return null;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+      const versiculos = filtered
+        .map((item, index) => {
+          const versiculo = item.versiculo.trim();
+          if (versiculo) return `📖 ${versiculo}`;
+          return null;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+      return [pautas, versiculos].filter(Boolean).join("\n\n");
+    }
+
+    // Modo combinado: pauta com versiculo (modo padrão)
+    return filtered
+      .map((item, index) => {
+        const emoji = getEmojiNumber(index);
+        const pauta = item.pauta.trim();
+        const versiculo = item.versiculo.trim();
+        if (pauta && versiculo) return `${emoji} ${pauta}\n📖 ${versiculo}`;
+        if (pauta) return `${emoji} ${pauta}`;
+        return `${emoji} ${versiculo}`;
+      })
+      .join("\n\n");
+  })();
 
   const hasAnyContent = output.length > 0;
 
@@ -665,8 +771,32 @@ function PrayerGuidelines() {
         <Grid $hasPreview={showGenerated && !!generated}>
           <Card>
             <CardTop>
-              <CardTopTitle>Formulario</CardTopTitle>
-              <CardTopHint>Organize as pautas</CardTopHint>
+              <CardTopLeft>
+                <div>
+                  <CardTopTitle>Formulario</CardTopTitle>
+                  <CardTopHint>Organize as pautas</CardTopHint>
+                </div>
+              </CardTopLeft>
+              <CardTopRight>
+                <LayoutSelector>
+                  <LayoutButton
+                    type="button"
+                    $active={layoutMode === "combined"}
+                    onClick={() => setLayoutMode("combined")}
+                    title="Pauta + Versiculo juntos"
+                  >
+                    Juntos
+                  </LayoutButton>
+                  <LayoutButton
+                    type="button"
+                    $active={layoutMode === "sequential"}
+                    onClick={() => setLayoutMode("sequential")}
+                    title="Pauta depois Versiculo"
+                  >
+                    Sequencial
+                  </LayoutButton>
+                </LayoutSelector>
+              </CardTopRight>
             </CardTop>
             <CardBody>
               {prayerItems.map((item, index) => {
