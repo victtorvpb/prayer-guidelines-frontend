@@ -15,7 +15,7 @@ const SectionHeader = styled.div`
 
 const FieldLabel = styled.label`
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: #4f6471;
@@ -25,6 +25,10 @@ const ShortcutRow = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+
+  @media (max-width: 720px) {
+    display: none;
+  }
 `;
 
 const ShortcutButton = styled.button`
