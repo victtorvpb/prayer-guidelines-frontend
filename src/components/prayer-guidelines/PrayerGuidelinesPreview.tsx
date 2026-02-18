@@ -2,6 +2,7 @@ import { Copy } from "lucide-react";
 import * as S from "./PrayerGuidelines.styles";
 import type { CopyState } from "@/lib/types";
 import type { RefObject } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export interface PrayerGuidelinesPreviewProps {
   generated: string;
@@ -18,18 +19,18 @@ export function PrayerGuidelinesPreview({
   onCopyToClipboard,
   previewRef,
 }: PrayerGuidelinesPreviewProps) {
+  const { t } = useLanguage();
+
   return (
     <S.PreviewCard ref={previewRef}>
       <S.CardTop>
-        <S.CardTopTitle>Preview</S.CardTopTitle>
-        <S.CardTopHint>Pronto para enviar</S.CardTopHint>
+        <S.CardTopTitle>{t.preview.title}</S.CardTopTitle>
+        <S.CardTopHint>{t.preview.hint}</S.CardTopHint>
       </S.CardTop>
       <S.PreviewHeader>
         <div>
-          <S.PreviewTitle>Texto pronto</S.PreviewTitle>
-          <S.PreviewSubtitle>
-            Copie e compartilhe com o grupo.
-          </S.PreviewSubtitle>
+          <S.PreviewTitle>{t.preview.readyText}</S.PreviewTitle>
+          <S.PreviewSubtitle>{t.preview.readySubtitle}</S.PreviewSubtitle>
         </div>
         <S.PrimaryButton
           type="button"
@@ -37,7 +38,7 @@ export function PrayerGuidelinesPreview({
           style={{ minWidth: "auto", padding: "10px 16px" }}
         >
           <Copy size={16} />
-          Copiar
+          {t.preview.copyButton}
         </S.PrimaryButton>
       </S.PreviewHeader>
       <S.PreviewBody>
@@ -45,19 +46,17 @@ export function PrayerGuidelinesPreview({
           <S.PreviewText>{generated}</S.PreviewText>
         </S.PreviewBox>
         <S.StatusRow>
-          <span>{generated.split("\n").length} linha(s)</span>
+          <span>{t.preview.linesLabel(generated.split("\n").length)}</span>
           <S.StatusText role="status" aria-live="polite" $state={copyState}>
             {copyState === "copied"
-              ? "Copiado!"
+              ? t.preview.copiedMessage
               : copyState === "error"
-                ? "Erro ao copiar"
+                ? t.preview.errorMessage
                 : ""}
           </S.StatusText>
         </S.StatusRow>
         {needsRegenerate ? (
-          <S.RegenerateHint>
-            Voce alterou o formulario. Clique em Gerar pautas para atualizar.
-          </S.RegenerateHint>
+          <S.RegenerateHint>{t.preview.regenerateHint}</S.RegenerateHint>
         ) : null}
       </S.PreviewBody>
     </S.PreviewCard>

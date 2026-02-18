@@ -1,11 +1,23 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import type { RenderOptions } from "@testing-library/react";
+import type { ReactElement } from "react";
 import userEvent from "@testing-library/user-event";
 import PrayerGuidelines from "@/pages/PrayerGuidelines";
+import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { CONTENT_LIMITS, PAUTA_WARNINGS } from "@/lib/constants";
+
+const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
+  return <LanguageProvider>{children}</LanguageProvider>;
+};
+
+const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, "wrapper">,
+) => render(ui, { wrapper: AllTheProviders, ...options });
 
 describe("PrayerGuidelines", () => {
   it("shows a warning when pauta exceeds limit", () => {
-    render(<PrayerGuidelines />);
+    customRender(<PrayerGuidelines />);
 
     const pautaInput = screen.getByLabelText("Pauta (mensagens)");
     const longText = "a".repeat(CONTENT_LIMITS.PAUTA + 1);
@@ -21,13 +33,13 @@ describe("PrayerGuidelines", () => {
 
   it("toggles layout mode with pressed state", async () => {
     const user = userEvent.setup();
-    render(<PrayerGuidelines />);
+    customRender(<PrayerGuidelines />);
 
     const combinedButton = screen.getByRole("button", {
-      name: "Layout juntos",
+      name: "Juntos",
     });
     const sequentialButton = screen.getByRole("button", {
-      name: "Layout sequencial",
+      name: "Sequencial",
     });
 
     expect(combinedButton).toHaveAttribute("aria-pressed", "true");
@@ -40,13 +52,13 @@ describe("PrayerGuidelines", () => {
   });
 
   it("exposes formatting shortcuts with accessible labels", () => {
-    render(<PrayerGuidelines />);
+    customRender(<PrayerGuidelines />);
 
     expect(screen.getByRole("button", { name: "Negrito" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Italico" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Itálico" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Tachado" })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Monoespaco" }),
+      screen.getByRole("button", { name: "Monoespaço" }),
     ).toBeInTheDocument();
   });
 });

@@ -76,6 +76,14 @@ export const Container = styled.div`
    Header
    ======================== */
 
+export const HeaderTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 6px;
+`;
+
 export const Header = styled.header`
   display: flex;
   flex-direction: column;
@@ -83,21 +91,6 @@ export const Header = styled.header`
   margin-bottom: 0;
   align-items: center;
   text-align: center;
-`;
-
-export const LogoInline = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-export const LogoImage = styled.img`
-  width: 64px;
-  height: auto;
-  display: block;
-
-  @media (max-width: 720px) {
-    width: 48px;
-  }
 `;
 
 export const Title = styled.h1`
@@ -151,7 +144,7 @@ export const ToggleGroup = styled.div`
 
 export const ColorSwitcher = styled.div`
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   gap: 8px;
   width: 100%;
