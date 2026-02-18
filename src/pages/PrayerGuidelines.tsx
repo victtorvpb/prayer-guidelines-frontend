@@ -1,502 +1,21 @@
 import { useRef, useState } from "react";
-import { Copy, Plus, Sparkles, X } from "lucide-react";
-import styled, { css, keyframes } from "styled-components";
 
 import {
-  PautaField,
-  VersiculoField,
-} from "@/components/prayer-guidelines/fields";
+  PrayerGuidelinesHeader,
+  PrayerGuidelinesForm,
+  PrayerGuidelinesPreview,
+} from "@/components/prayer-guidelines";
+import {
+  CONTENT_LIMITS,
+  PAUTA_WARNINGS,
+  VERSICULO_WARNINGS,
+} from "@/lib/constants";
+import type { PrayerItem, Theme, LayoutMode, CopyState } from "@/lib/types";
+import { getEmojiNumber } from "@/lib/prayer.utils";
+import * as S from "@/components/prayer-guidelines/PrayerGuidelines.styles";
 
-interface PrayerItem {
-  id: number;
-  pauta: string;
-  versiculo: string;
-}
-
-const getEmojiNumber = (index: number): string => {
-  const emojiNumbers = [
-    "1️⃣",
-    "2️⃣",
-    "3️⃣",
-    "4️⃣",
-    "5️⃣",
-    "6️⃣",
-    "7️⃣",
-    "8️⃣",
-    "9️⃣",
-    "🔟",
-  ];
-  return emojiNumbers[index] || `${index + 1}️⃣`;
-};
-
-const PAUTA_LIMIT = 200;
-const VERSICULO_LIMIT = 100;
-
-const pautaWarnings = [
-  "😅 Calma ai! Isso nao e redacao do ENEM.",
-  "✍️ Pauta longa demais. Bora resumir?",
-  "📚 Ta escrevendo muito. Alguem vai ler isso tudo?",
-  "🧠 Menos palavras, mais impacto.",
-  "🧹 Texto comprido pede uma vassoura. Enxuga ai!",
-];
-
-const versiculoWarnings = [
-  "📖 Versiculo grande. Que tal cortar?",
-  "🫣 Ta longo. Vale o resumo?",
-  "✂️ Encurta o versiculo pra caber melhor.",
-  "🙃 Passou de 50! Respira e resume.",
-  "⚡ Direto ao ponto fica mais forte.",
-];
-
-const getPautaWarning = (index: number) =>
-  pautaWarnings[index] ?? pautaWarnings[0];
-
-const getVersiculoWarning = (index: number) =>
-  versiculoWarnings[index] ?? versiculoWarnings[0];
-
-const fadeUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-const Page = styled.div`
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden;
-  background: var(--page-bg, #e9edf1);
-  --accent: #2f8a86;
-  --accent-dark: #247a74;
-  --accent-deep: #206d6a;
-  --accent-rgb: 47, 138, 134;
-  --accent-soft: rgba(47, 138, 134, 0.12);
-  --accent-fade: rgba(47, 138, 134, 0.22);
-
-  &[data-theme="blue"] {
-    --accent: #2e6fbf;
-    --accent-dark: #2a63a8;
-    --accent-deep: #24578f;
-    --accent-rgb: 46, 111, 191;
-    --accent-soft: rgba(46, 111, 191, 0.12);
-    --accent-fade: rgba(46, 111, 191, 0.22);
-  }
-`;
-
-const BackgroundLayer = styled.div`
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      600px 420px at 12% 8%,
-      rgba(var(--accent-rgb), 0.18),
-      transparent 60%
-    ),
-    radial-gradient(
-      520px 360px at 88% 12%,
-      rgba(var(--accent-rgb), 0.16),
-      transparent 62%
-    ),
-    radial-gradient(
-      700px 480px at 50% 92%,
-      rgba(31, 45, 55, 0.1),
-      transparent 65%
-    );
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(17, 24, 32, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(17, 24, 32, 0.04) 1px, transparent 1px);
-    background-size: 38px 38px;
-    opacity: 0.35;
-  }
-`;
-
-const Container = styled.div`
-  position: relative;
-  margin: 0 auto;
-  width: min(1160px, 92vw);
-  padding: 36px 0 64px;
-`;
-
-const Header = styled.header`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 28px;
-  animation: ${fadeUp} 0.6s ease both;
-`;
-
-const Title = styled.h1`
-  font-family: "Sora", "Manrope", sans-serif;
-  font-size: clamp(2rem, 2.4vw, 3rem);
-  color: #12212a;
-  line-height: 1.15;
-  font-weight: 700;
-  max-width: 720px;
-`;
-
-const Subtitle = styled.p`
-  color: #51626e;
-  font-size: 0.98rem;
-  line-height: 1.55;
-  max-width: 620px;
-  margin-top: -2px;
-`;
-
-const BadgeRow = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-`;
-
-const Badge = styled.span`
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid var(--accent-fade);
-  color: #3b5562;
-`;
-
-const ToggleGroup = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(216, 227, 234, 0.85);
-  box-shadow: 0 16px 32px -28px rgba(12, 44, 58, 0.6);
-`;
-
-const ColorSwitcher = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-
-  @media (max-width: 720px) {
-    position: static;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 12px;
-  }
-`;
-
-const ToggleButton = styled.button<{ $active: boolean }>`
-  border: none;
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  cursor: pointer;
-  color: ${({ $active }) => ($active ? "#ffffff" : "#51626e")};
-  background: ${({ $active }) => ($active ? "var(--accent)" : "transparent")};
-  transition: all 0.2s ease;
-
-  &:hover {
-    color: ${({ $active }) => ($active ? "#ffffff" : "#2c4957")};
-    background: ${({ $active }) =>
-      $active ? "var(--accent-dark)" : "rgba(47, 138, 134, 0.08)"};
-  }
-`;
-
-const Grid = styled.div<{ $hasPreview: boolean }>`
-  display: grid;
-  align-items: start;
-  gap: 28px;
-  grid-template-columns: ${({ $hasPreview }) =>
-    $hasPreview ? "minmax(0, 1.05fr) minmax(0, 0.95fr)" : "minmax(0, 1fr)"};
-  ${({ $hasPreview }) =>
-    !$hasPreview &&
-    css`
-      max-width: 860px;
-      margin: 0 auto;
-    `}
-
-  @media (max-width: 960px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const Card = styled.section`
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(226, 235, 240, 0.9);
-  box-shadow: 0 40px 120px -80px rgba(18, 44, 58, 0.8);
-  overflow: hidden;
-  backdrop-filter: blur(6px);
-  animation: ${fadeUp} 0.6s ease both;
-`;
-
-const CardTop = styled.div`
-  background: linear-gradient(
-    135deg,
-    var(--accent) 0%,
-    var(--accent-dark) 50%,
-    var(--accent-deep) 100%
-  );
-  padding: 18px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #f8fbfc;
-`;
-
-const CardTopTitle = styled.h2`
-  font-family: "Sora", "Manrope", sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-weight: 600;
-`;
-
-const CardTopHint = styled.span`
-  font-size: 0.85rem;
-  opacity: 0.85;
-`;
-
-const CardBody = styled.div`
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-`;
-
-const Section = styled.div`
-  border-radius: 22px;
-  border: 1px solid rgba(216, 227, 234, 0.85);
-  background: #ffffff;
-  padding: 20px 22px;
-  box-shadow: 0 18px 40px -32px rgba(14, 46, 60, 0.45);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  animation: ${fadeUp} 0.6s ease both;
-`;
-
-const SectionHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-`;
-
-const SectionTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-  color: #2c4552;
-  letter-spacing: 0.14em;
-`;
-
-const SectionIndex = styled.span`
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: rgba(var(--accent-rgb), 0.15);
-  color: var(--accent);
-  font-weight: 700;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-`;
-
-const GhostButton = styled.button`
-  border: none;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 999px;
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #5b6f79;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(255, 228, 214, 0.8);
-    color: #b24d2b;
-  }
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-`;
-
-const PrimaryButton = styled.button`
-  flex: 1;
-  min-width: 220px;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(
-    135deg,
-    var(--accent) 0%,
-    var(--accent-dark) 60%,
-    var(--accent-deep) 100%
-  );
-  color: #f8fbfc;
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 12px 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  box-shadow: 0 18px 35px -24px rgba(15, 63, 68, 0.8);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 22px 40px -24px rgba(15, 63, 68, 0.85);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-`;
-
-const SecondaryButton = styled.button`
-  flex: 1;
-  min-width: 220px;
-  border-radius: 999px;
-  border: 1px solid var(--accent-fade);
-  background: #ffffff;
-  color: #24424f;
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 12px 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  box-shadow: 0 16px 32px -28px rgba(12, 44, 58, 0.7);
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-
-  &:hover {
-    background: var(--accent-soft);
-    transform: translateY(-1px);
-  }
-`;
-
-const Hint = styled.div`
-  border-radius: 18px;
-  border: 1px dashed rgba(var(--accent-rgb), 0.35);
-  background: rgba(255, 255, 255, 0.85);
-  padding: 12px 14px;
-  font-size: 0.8rem;
-  color: #6a7d88;
-`;
-
-const PreviewCard = styled(Card)`
-  position: sticky;
-  top: 24px;
-  animation-delay: 0.08s;
-`;
-
-const PreviewHeader = styled.div`
-  padding: 24px 26px 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-`;
-
-const PreviewTitle = styled.h3`
-  font-family: "Sora", "Manrope", sans-serif;
-  font-size: 1.4rem;
-  margin: 0 0 6px;
-  color: #1a2e37;
-`;
-
-const PreviewSubtitle = styled.p`
-  margin: 0;
-  color: #5a707c;
-  font-size: 0.95rem;
-`;
-
-const PreviewBody = styled.div`
-  padding: 18px 26px 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const PreviewBox = styled.div`
-  border-radius: 22px;
-  border: 1px solid rgba(216, 227, 234, 0.9);
-  background: #ffffff;
-  padding: 18px 20px;
-  min-height: 220px;
-`;
-
-const PreviewText = styled.pre`
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
-  font-size: 0.85rem;
-  line-height: 1.7;
-  color: #15323f;
-`;
-
-const StatusRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #5a707c;
-`;
-
-const StatusText = styled.span<{ $state: "idle" | "copied" | "error" }>`
-  color: ${({ $state }) => {
-    if ($state === "copied") return "#1e7b5b";
-    if ($state === "error") return "#bb3246";
-    return "#5a707c";
-  }};
-  transition: color 0.2s ease;
-`;
-
-const RegenerateHint = styled.div`
-  border-radius: 18px;
-  border: 1px dashed rgba(var(--accent-rgb), 0.35);
-  background: rgba(255, 255, 255, 0.85);
-  padding: 12px 14px;
-  font-size: 0.8rem;
-  color: #5a707c;
-`;
+const PAUTA_LIMIT = CONTENT_LIMITS.PAUTA;
+const VERSICULO_LIMIT = CONTENT_LIMITS.VERSICULO;
 
 function PrayerGuidelines() {
   const [prayerItems, setPrayerItems] = useState<PrayerItem[]>([
@@ -504,16 +23,16 @@ function PrayerGuidelines() {
   ]);
   const [generated, setGenerated] = useState<string>("");
   const [showGenerated, setShowGenerated] = useState(false);
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">(
-    "idle",
-  );
+  const [copyState, setCopyState] = useState<CopyState>("idle");
   const [needsRegenerate, setNeedsRegenerate] = useState(false);
-  const [theme, setTheme] = useState<"green" | "blue">("green");
+  const [theme, setTheme] = useState<Theme>("green");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("combined");
   const pautaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
   const pautaWarningIndexRef = useRef<Record<number, number>>({});
   const versiculoWarningIndexRef = useRef<Record<number, number>>({});
-  const previewRef = useRef<HTMLDivElement | null>(null);
+  const previewRef = useRef<HTMLElement | null>(null);
 
+  // Prayer item management
   const addPrayerItem = () => {
     setPrayerItems((current) => {
       const newId = Math.max(...current.map((item) => item.id)) + 1;
@@ -534,7 +53,7 @@ function PrayerGuidelines() {
       );
       const isPauta = field === "pauta";
       const limit = isPauta ? PAUTA_LIMIT : VERSICULO_LIMIT;
-      const warnings = isPauta ? pautaWarnings : versiculoWarnings;
+      const warnings = isPauta ? PAUTA_WARNINGS : VERSICULO_WARNINGS;
       const warningRef = isPauta
         ? pautaWarningIndexRef
         : versiculoWarningIndexRef;
@@ -563,20 +82,52 @@ function PrayerGuidelines() {
     }
   };
 
-  const output = prayerItems
-    .filter((item) => item.pauta.trim() || item.versiculo.trim())
-    .map((item, index) => {
-      const emoji = getEmojiNumber(index);
-      const pauta = item.pauta.trim();
-      const versiculo = item.versiculo.trim();
-      if (pauta && versiculo) return `${emoji} ${pauta}\n📖 ${versiculo}`;
-      if (pauta) return `${emoji} ${pauta}`;
-      return `${emoji} ${versiculo}`;
-    })
-    .join("\n\n");
+  // Text generation
+  const output = (() => {
+    const filtered = prayerItems.filter(
+      (item) => item.pauta.trim() || item.versiculo.trim(),
+    );
+
+    if (layoutMode === "sequential") {
+      // Sequential mode: All pautas first, then all versiculos
+      const pautas = filtered
+        .map((item, index) => {
+          const emoji = getEmojiNumber(index);
+          const pauta = item.pauta.trim();
+          if (pauta) return `${emoji} ${pauta}`;
+          return null;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+      const versiculos = filtered
+        .map((item) => {
+          const versiculo = item.versiculo.trim();
+          if (versiculo) return `📖 ${versiculo}`;
+          return null;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+      return [pautas, versiculos].filter(Boolean).join("\n\n");
+    }
+
+    // Combined mode: pauta with versiculo (default)
+    return filtered
+      .map((item, index) => {
+        const emoji = getEmojiNumber(index);
+        const pauta = item.pauta.trim();
+        const versiculo = item.versiculo.trim();
+        if (pauta && versiculo) return `${emoji} ${pauta}\n📖 ${versiculo}`;
+        if (pauta) return `${emoji} ${pauta}`;
+        return `${emoji} ${versiculo}`;
+      })
+      .join("\n\n");
+  })();
 
   const hasAnyContent = output.length > 0;
 
+  // Text formatting
   const applyPautaFormat = (id: number, prefix: string, suffix = prefix) => {
     const textarea = pautaRefs.current[id];
     const item = prayerItems.find((entry) => entry.id === id);
@@ -597,6 +148,7 @@ function PrayerGuidelines() {
     });
   };
 
+  // Output generation
   const generateOutput = () => {
     if (!hasAnyContent) return;
     setGenerated(output);
@@ -615,6 +167,7 @@ function PrayerGuidelines() {
     }, 120);
   };
 
+  // Clipboard management
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(generated);
@@ -628,188 +181,41 @@ function PrayerGuidelines() {
   };
 
   return (
-    <Page data-theme={theme}>
-      <BackgroundLayer />
-      <Container>
-        <ColorSwitcher>
-          <ToggleGroup role="group" aria-label="Selecionar cor">
-            <ToggleButton
-              type="button"
-              $active={theme === "green"}
-              onClick={() => setTheme("green")}
-            >
-              Verde
-            </ToggleButton>
-            <ToggleButton
-              type="button"
-              $active={theme === "blue"}
-              onClick={() => setTheme("blue")}
-            >
-              Azul
-            </ToggleButton>
-          </ToggleGroup>
-        </ColorSwitcher>
-        <Header>
-          <Title>Gerador de Pautas de oracao</Title>
-          <Subtitle>
-            Crie pautas, aplique formatacao no estilo de mensagens e gere um
-            texto pronto para compartilhar com sua equipe.
-          </Subtitle>
-          <BadgeRow>
-            <Badge>Clareza</Badge>
-            <Badge>Rapido</Badge>
-            <Badge>Compartilhavel</Badge>
-          </BadgeRow>
-        </Header>
+    <S.Page data-theme={theme}>
+      <S.BackgroundLayer />
+      <S.Container>
+        <PrayerGuidelinesHeader theme={theme} onThemeChange={setTheme} />
 
-        <Grid $hasPreview={showGenerated && !!generated}>
-          <Card>
-            <CardTop>
-              <CardTopTitle>Formulario</CardTopTitle>
-              <CardTopHint>Organize as pautas</CardTopHint>
-            </CardTop>
-            <CardBody>
-              {prayerItems.map((item, index) => {
-                const number = index + 1;
-                const pautaLength = item.pauta.trim().length;
-                const versiculoLength = item.versiculo.trim().length;
-                const pautaWarningIndex =
-                  pautaWarningIndexRef.current[item.id] ?? 0;
-                const versiculoWarningIndex =
-                  versiculoWarningIndexRef.current[item.id] ?? 0;
-                const pautaWarning =
-                  pautaLength > PAUTA_LIMIT
-                    ? getPautaWarning(pautaWarningIndex)
-                    : undefined;
-                const versiculoWarning =
-                  versiculoLength > VERSICULO_LIMIT
-                    ? getVersiculoWarning(versiculoWarningIndex)
-                    : undefined;
-                return (
-                  <Section
-                    key={item.id}
-                    style={{ animationDelay: `${index * 0.06}s` }}
-                  >
-                    <SectionHeader>
-                      <SectionTitle>
-                        <SectionIndex>{number}</SectionIndex>
-                        Pauta {number}
-                      </SectionTitle>
-                      {prayerItems.length > 1 ? (
-                        <GhostButton
-                          type="button"
-                          onClick={() => removePrayerItem(item.id)}
-                          aria-label={`Remover pauta ${number}`}
-                        >
-                          <X size={16} />
-                        </GhostButton>
-                      ) : null}
-                    </SectionHeader>
-
-                    <PautaField
-                      id={item.id}
-                      value={item.pauta}
-                      onChange={(value) =>
-                        updatePrayerItem(item.id, "pauta", value)
-                      }
-                      onFormat={(prefix) => applyPautaFormat(item.id, prefix)}
-                      textareaRef={(element) => {
-                        pautaRefs.current[item.id] = element;
-                      }}
-                      hasWarning={pautaLength > PAUTA_LIMIT}
-                      warningMessage={pautaWarning}
-                    />
-
-                    <VersiculoField
-                      id={item.id}
-                      value={item.versiculo}
-                      onChange={(value) =>
-                        updatePrayerItem(item.id, "versiculo", value)
-                      }
-                      hasWarning={versiculoLength > VERSICULO_LIMIT}
-                      warningMessage={versiculoWarning}
-                    />
-                  </Section>
-                );
-              })}
-
-              <ButtonRow>
-                <SecondaryButton type="button" onClick={addPrayerItem}>
-                  <Plus size={16} />
-                  Adicionar pauta
-                </SecondaryButton>
-                <PrimaryButton
-                  type="button"
-                  onClick={generateOutput}
-                  disabled={!hasAnyContent}
-                >
-                  <Sparkles size={16} />
-                  Gerar pautas
-                </PrimaryButton>
-              </ButtonRow>
-
-              {!hasAnyContent ? (
-                <Hint>
-                  Dica: preencha ao menos um tema ou versiculo para gerar.
-                </Hint>
-              ) : null}
-            </CardBody>
-          </Card>
+        <S.Grid $hasPreview={showGenerated && !!generated}>
+          <S.Card>
+            <PrayerGuidelinesForm
+              prayerItems={prayerItems}
+              layoutMode={layoutMode}
+              hasAnyContent={hasAnyContent}
+              pautaRefs={pautaRefs}
+              pautaWarningIndexRef={pautaWarningIndexRef}
+              versiculoWarningIndexRef={versiculoWarningIndexRef}
+              onUpdateItem={updatePrayerItem}
+              onRemoveItem={removePrayerItem}
+              onAddItem={addPrayerItem}
+              onApplyFormat={applyPautaFormat}
+              onGenerateOutput={generateOutput}
+              onLayoutModeChange={setLayoutMode}
+            />
+          </S.Card>
 
           {showGenerated && generated ? (
-            <div ref={previewRef}>
-              <PreviewCard>
-                <CardTop>
-                  <CardTopTitle>Preview</CardTopTitle>
-                  <CardTopHint>Pronto para enviar</CardTopHint>
-                </CardTop>
-                <PreviewHeader>
-                  <div>
-                    <PreviewTitle>Texto pronto</PreviewTitle>
-                    <PreviewSubtitle>
-                      Copie e compartilhe com o grupo.
-                    </PreviewSubtitle>
-                  </div>
-                  <PrimaryButton
-                    type="button"
-                    onClick={copyToClipboard}
-                    style={{ minWidth: "auto", padding: "10px 16px" }}
-                  >
-                    <Copy size={16} />
-                    Copiar
-                  </PrimaryButton>
-                </PreviewHeader>
-                <PreviewBody>
-                  <PreviewBox>
-                    <PreviewText>{generated}</PreviewText>
-                  </PreviewBox>
-                  <StatusRow>
-                    <span>{generated.split("\n").length} linha(s)</span>
-                    <StatusText
-                      role="status"
-                      aria-live="polite"
-                      $state={copyState}
-                    >
-                      {copyState === "copied"
-                        ? "Copiado!"
-                        : copyState === "error"
-                          ? "Erro ao copiar"
-                          : ""}
-                    </StatusText>
-                  </StatusRow>
-                  {needsRegenerate ? (
-                    <RegenerateHint>
-                      Voce alterou o formulario. Clique em Gerar pautas para
-                      atualizar.
-                    </RegenerateHint>
-                  ) : null}
-                </PreviewBody>
-              </PreviewCard>
-            </div>
+            <PrayerGuidelinesPreview
+              generated={generated}
+              copyState={copyState}
+              needsRegenerate={needsRegenerate}
+              onCopyToClipboard={copyToClipboard}
+              previewRef={previewRef}
+            />
           ) : null}
-        </Grid>
-      </Container>
-    </Page>
+        </S.Grid>
+      </S.Container>
+    </S.Page>
   );
 }
 
