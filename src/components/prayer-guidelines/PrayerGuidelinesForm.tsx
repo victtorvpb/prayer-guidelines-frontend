@@ -81,8 +81,7 @@ export function PrayerGuidelinesForm({
           const pautaLength = item.pauta.trim().length;
           const versiculoLength = item.versiculo.trim().length;
           const pautaWarningIndex = pautaWarningIndices[item.id] ?? 0;
-          const versiculoWarningIndex =
-            versiculoWarningIndices[item.id] ?? 0;
+          const versiculoWarningIndex = versiculoWarningIndices[item.id] ?? 0;
           const pautaWarning =
             pautaLength > PAUTA_LIMIT
               ? getPautaWarning(pautaWarningIndex)
