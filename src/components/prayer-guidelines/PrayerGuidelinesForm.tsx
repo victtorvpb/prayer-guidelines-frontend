@@ -18,7 +18,7 @@ export interface PrayerGuidelinesFormProps {
   onUpdateItem: (
     id: number,
     field: "pauta" | "versiculo",
-    value: string
+    value: string,
   ) => void;
   onRemoveItem: (id: number) => void;
   onAddItem: () => void;
@@ -72,87 +72,86 @@ export function PrayerGuidelinesForm({
         </S.CardTopRight>
       </S.CardTop>
       <S.CardBody>
-      {prayerItems.map((item, index) => {
-        const number = index + 1;
-        const pautaLength = item.pauta.trim().length;
-        const versiculoLength = item.versiculo.trim().length;
-        const pautaWarningIndex =
-          pautaWarningIndexRef.current[item.id] ?? 0;
-        const versiculoWarningIndex =
-          versiculoWarningIndexRef.current[item.id] ?? 0;
-        const pautaWarning =
-          pautaLength > PAUTA_LIMIT
-            ? getPautaWarning(pautaWarningIndex)
-            : undefined;
-        const versiculoWarning =
-          versiculoLength > VERSICULO_LIMIT
-            ? getVersiculoWarning(versiculoWarningIndex)
-            : undefined;
+        {prayerItems.map((item, index) => {
+          const number = index + 1;
+          const pautaLength = item.pauta.trim().length;
+          const versiculoLength = item.versiculo.trim().length;
+          const pautaWarningIndex = pautaWarningIndexRef.current[item.id] ?? 0;
+          const versiculoWarningIndex =
+            versiculoWarningIndexRef.current[item.id] ?? 0;
+          const pautaWarning =
+            pautaLength > PAUTA_LIMIT
+              ? getPautaWarning(pautaWarningIndex)
+              : undefined;
+          const versiculoWarning =
+            versiculoLength > VERSICULO_LIMIT
+              ? getVersiculoWarning(versiculoWarningIndex)
+              : undefined;
 
-        return (
-          <S.Section
-            key={item.id}
-            style={{ animationDelay: `${index * 0.06}s` }}
+          return (
+            <S.Section
+              key={item.id}
+              style={{ animationDelay: `${index * 0.06}s` }}
+            >
+              <S.SectionHeader>
+                <S.SectionTitle>
+                  <S.SectionIndex>{number}</S.SectionIndex>
+                  Pauta {number}
+                </S.SectionTitle>
+                {prayerItems.length > 1 ? (
+                  <S.GhostButton
+                    type="button"
+                    onClick={() => onRemoveItem(item.id)}
+                    aria-label={`Remover pauta ${number}`}
+                  >
+                    <X size={16} />
+                  </S.GhostButton>
+                ) : null}
+              </S.SectionHeader>
+
+              <PautaField
+                id={item.id}
+                value={item.pauta}
+                onChange={(value) => onUpdateItem(item.id, "pauta", value)}
+                onFormat={(prefix) => onApplyFormat(item.id, prefix)}
+                textareaRef={(element) => {
+                  pautaRefs.current[item.id] = element;
+                }}
+                hasWarning={pautaLength > PAUTA_LIMIT}
+                warningMessage={pautaWarning}
+              />
+
+              <VersiculoField
+                id={item.id}
+                value={item.versiculo}
+                onChange={(value) => onUpdateItem(item.id, "versiculo", value)}
+                hasWarning={versiculoLength > VERSICULO_LIMIT}
+                warningMessage={versiculoWarning}
+              />
+            </S.Section>
+          );
+        })}
+
+        <S.ButtonRow>
+          <S.SecondaryButton type="button" onClick={onAddItem}>
+            <Plus size={16} />
+            Adicionar pauta
+          </S.SecondaryButton>
+          <S.PrimaryButton
+            type="button"
+            onClick={onGenerateOutput}
+            disabled={!hasAnyContent}
           >
-            <S.SectionHeader>
-              <S.SectionTitle>
-                <S.SectionIndex>{number}</S.SectionIndex>
-                Pauta {number}
-              </S.SectionTitle>
-              {prayerItems.length > 1 ? (
-                <S.GhostButton
-                  type="button"
-                  onClick={() => onRemoveItem(item.id)}
-                  aria-label={`Remover pauta ${number}`}
-                >
-                  <X size={16} />
-                </S.GhostButton>
-              ) : null}
-            </S.SectionHeader>
+            <Sparkles size={16} />
+            Gerar pautas
+          </S.PrimaryButton>
+        </S.ButtonRow>
 
-            <PautaField
-              id={item.id}
-              value={item.pauta}
-              onChange={(value) => onUpdateItem(item.id, "pauta", value)}
-              onFormat={(prefix) => onApplyFormat(item.id, prefix)}
-              textareaRef={(element) => {
-                pautaRefs.current[item.id] = element;
-              }}
-              hasWarning={pautaLength > PAUTA_LIMIT}
-              warningMessage={pautaWarning}
-            />
-
-            <VersiculoField
-              id={item.id}
-              value={item.versiculo}
-              onChange={(value) => onUpdateItem(item.id, "versiculo", value)}
-              hasWarning={versiculoLength > VERSICULO_LIMIT}
-              warningMessage={versiculoWarning}
-            />
-          </S.Section>
-        );
-      })}
-
-      <S.ButtonRow>
-        <S.SecondaryButton type="button" onClick={onAddItem}>
-          <Plus size={16} />
-          Adicionar pauta
-        </S.SecondaryButton>
-        <S.PrimaryButton
-          type="button"
-          onClick={onGenerateOutput}
-          disabled={!hasAnyContent}
-        >
-          <Sparkles size={16} />
-          Gerar pautas
-        </S.PrimaryButton>
-      </S.ButtonRow>
-
-      {!hasAnyContent ? (
-        <S.Hint>
-          Dica: preencha ao menos um tema ou versiculo para gerar.
-        </S.Hint>
-      ) : null}
+        {!hasAnyContent ? (
+          <S.Hint>
+            Dica: preencha ao menos um tema ou versiculo para gerar.
+          </S.Hint>
+        ) : null}
       </S.CardBody>
     </>
   );

@@ -9,7 +9,7 @@ export interface PrayerGuidelinesHeaderProps {
 export function PrayerGuidelinesHeader({
   theme,
   onThemeChange,
-}: Omit<PrayerGuidelinesHeaderProps, 'layoutMode' | 'onLayoutModeChange'>) {
+}: Omit<PrayerGuidelinesHeaderProps, "layoutMode" | "onLayoutModeChange">) {
   return (
     <>
       <S.ColorSwitcher>
@@ -33,8 +33,8 @@ export function PrayerGuidelinesHeader({
       <S.Header>
         <S.Title>Gerador de Pautas de oracao</S.Title>
         <S.Subtitle>
-          Crie pautas, aplique formatacao no estilo de mensagens e gere um
-          texto pronto para compartilhar com sua equipe.
+          Crie pautas, aplique formatacao no estilo de mensagens e gere um texto
+          pronto para compartilhar com sua equipe.
         </S.Subtitle>
         <S.BadgeRow>
           <S.Badge>Clareza</S.Badge>

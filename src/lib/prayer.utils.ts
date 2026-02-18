@@ -1,8 +1,4 @@
-import {
-  EMOJI_NUMBERS,
-  PAUTA_WARNINGS,
-  VERSICULO_WARNINGS,
-} from "./constants";
+import { EMOJI_NUMBERS, PAUTA_WARNINGS, VERSICULO_WARNINGS } from "./constants";
 
 export function getEmojiNumber(index: number): string {
   return EMOJI_NUMBERS[index] || `${index + 1}️⃣`;

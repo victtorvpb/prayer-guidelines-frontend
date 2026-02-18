@@ -182,7 +182,7 @@ export const Grid = styled.div<{ $hasPreview: boolean }>`
   gap: 18px;
   grid-template-columns: ${({ $hasPreview }) =>
     $hasPreview ? "1fr 1fr" : "none"};
-  
+
   ${({ $hasPreview }) =>
     !$hasPreview &&
     css`
@@ -263,14 +263,10 @@ export const LayoutButton = styled.button<{ $active: boolean }>`
   border-radius: 999px;
   padding: 8px 14px;
   border: ${({ $active }) =>
-    $active
-      ? "2px solid rgba(255, 255, 255, 0.4)"
-      : "2px solid transparent"};
+    $active ? "2px solid rgba(255, 255, 255, 0.4)" : "2px solid transparent"};
   background: ${({ $active }) =>
-    $active
-      ? "rgba(255, 255, 255, 0.95)"
-      : "rgba(var(--accent-rgb), 0.3)"};
-  color: ${({ $active }) => 
+    $active ? "rgba(255, 255, 255, 0.95)" : "rgba(var(--accent-rgb), 0.3)"};
+  color: ${({ $active }) =>
     $active ? "var(--accent)" : "rgba(255, 255, 255, 0.9)"};
   font-size: 0.8rem;
   font-weight: 600;
@@ -282,9 +278,7 @@ export const LayoutButton = styled.button<{ $active: boolean }>`
 
   &:hover {
     background: ${({ $active }) =>
-      $active
-        ? "rgba(255, 255, 255, 1)"
-        : "rgba(var(--accent-rgb), 0.4)"};
+      $active ? "rgba(255, 255, 255, 1)" : "rgba(var(--accent-rgb), 0.4)"};
     border-color: ${({ $active }) =>
       $active ? "rgba(255, 255, 255, 0.6)" : "transparent"};
   }
@@ -412,7 +406,9 @@ export const PrimaryButton = styled.button`
   &:focus,
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--accent), 0 22px 40px -24px rgba(15, 63, 68, 0.85);
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 22px 40px -24px rgba(15, 63, 68, 0.85);
   }
   font-size: 0.95rem;
   font-weight: 700;
@@ -469,7 +465,9 @@ export const SecondaryButton = styled.button`
   &:focus,
   &:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px var(--accent), 0 16px 32px -28px rgba(12, 44, 58, 0.7);
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 16px 32px -28px rgba(12, 44, 58, 0.7);
   }
 `;
 

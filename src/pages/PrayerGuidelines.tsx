@@ -5,7 +5,11 @@ import {
   PrayerGuidelinesForm,
   PrayerGuidelinesPreview,
 } from "@/components/prayer-guidelines";
-import { CONTENT_LIMITS, PAUTA_WARNINGS, VERSICULO_WARNINGS } from "@/lib/constants";
+import {
+  CONTENT_LIMITS,
+  PAUTA_WARNINGS,
+  VERSICULO_WARNINGS,
+} from "@/lib/constants";
 import type { PrayerItem, Theme, LayoutMode, CopyState } from "@/lib/types";
 import { getEmojiNumber } from "@/lib/prayer.utils";
 import * as S from "@/components/prayer-guidelines/PrayerGuidelines.styles";
@@ -180,10 +184,7 @@ function PrayerGuidelines() {
     <S.Page data-theme={theme}>
       <S.BackgroundLayer />
       <S.Container>
-        <PrayerGuidelinesHeader
-          theme={theme}
-          onThemeChange={setTheme}
-        />
+        <PrayerGuidelinesHeader theme={theme} onThemeChange={setTheme} />
 
         <S.Grid $hasPreview={showGenerated && !!generated}>
           <S.Card>
