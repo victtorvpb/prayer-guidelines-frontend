@@ -126,6 +126,8 @@ type VersiculoFieldProps = {
   warningMessage?: string;
 };
 
+export type { PautaFieldProps, VersiculoFieldProps };
+
 const PautaField = ({
   id,
   value,

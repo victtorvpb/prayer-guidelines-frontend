@@ -1,35 +1,51 @@
-import * as React from 'react'
+import styled from "styled-components";
 
-import { cn } from '@/lib/utils'
+const Card = styled.div`
+  border-radius: 12px;
+  border: 1px solid rgba(226, 235, 240, 0.9);
+  background: #ffffff;
+  color: #1f313b;
+  box-shadow: 0 4px 12px rgba(14, 46, 60, 0.1);
+`;
 
-function Card({ className, ...props }: React.ComponentProps<'div'>) {
-  return (
-    <div
-      className={cn('rounded-xl border bg-card text-card-foreground shadow-soft', className)}
-      {...props}
-    />
-  )
-}
+const CardHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+`;
 
-function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex flex-col gap-1.5 p-6', className)} {...props} />
-}
+const CardTitle = styled.h3`
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0;
+`;
 
-function CardTitle({ className, ...props }: React.ComponentProps<'h3'>) {
-  return <h3 className={cn('text-lg font-semibold leading-none tracking-tight', className)} {...props} />
-}
+const CardDescription = styled.p`
+  font-size: 0.875rem;
+  color: #6a7d88;
+  margin: 0;
+`;
 
-function CardDescription({ className, ...props }: React.ComponentProps<'p'>) {
-  return <p className={cn('text-sm text-muted-foreground', className)} {...props} />
-}
+const CardContent = styled.div`
+  padding: 24px;
+  padding-top: 0;
+`;
 
-function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('p-6 pt-0', className)} {...props} />
-}
+const CardFooter = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  padding-top: 0;
+`;
 
-function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div className={cn('flex items-center p-6 pt-0', className)} {...props} />
-}
-
-export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
-
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+};

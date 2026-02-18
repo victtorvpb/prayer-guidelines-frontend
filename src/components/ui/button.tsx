@@ -1,49 +1,109 @@
-import * as React from 'react'
-import { Slot } from '@radix-ui/react-slot'
-import { cva, type VariantProps } from 'class-variance-authority'
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import styled from "styled-components";
 
-import { cn } from '@/lib/utils'
+type ButtonVariant =
+  | "default"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "destructive";
+type ButtonSize = "default" | "sm" | "lg" | "icon";
 
-const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-      },
-      size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
-        icon: 'h-10 w-10',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  },
-)
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  asChild?: boolean;
 }
 
+const BaseButton = styled.button<{
+  $variant: ButtonVariant;
+  $size: ButtonSize;
+}>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  ${({ $variant }) => {
+    switch ($variant) {
+      case "secondary":
+        return `
+          background: #f0f4f7;
+          color: #2c4957;
+          &:hover { background: #e0e8f0; }
+        `;
+      case "outline":
+        return `
+          border: 1px solid rgba(211, 223, 231, 0.9);
+          background: #ffffff;
+          color: #2c4957;
+          &:hover { background: #f8fafb; }
+        `;
+      case "ghost":
+        return `
+          background: transparent;
+          color: #2c4957;
+          &:hover { background: rgba(47, 138, 134, 0.08); }
+        `;
+      case "destructive":
+        return `
+          background: #dc2626;
+          color: white;
+          &:hover { background: #b91c1c; }
+        `;
+      default:
+        return `
+          background: var(--accent);
+          color: white;
+          &:hover { background: var(--accent-dark); }
+        `;
+    }
+  }};
+
+  ${({ $size }) => {
+    switch ($size) {
+      case "sm":
+        return `height: 36px; border-radius: 6px; padding: 8px 12px;`;
+      case "lg":
+        return `height: 44px; border-radius: 6px; padding: 8px 32px;`;
+      case "icon":
+        return `height: 40px; width: 40px; padding: 0;`;
+      default:
+        return `height: 40px; padding: 8px 16px;`;
+    }
+  }};
+`;
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button'
-    return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
-    )
+  (
+    { variant = "default", size = "default", asChild = false, ...props },
+    ref,
+  ) => {
+    if (asChild) {
+      return <Slot ref={ref} {...props} />;
+    }
+    return <BaseButton ref={ref} $variant={variant} $size={size} {...(props as any)} />;
   },
-)
-Button.displayName = 'Button'
+);
+Button.displayName = "Button";
 
-export { Button, buttonVariants }
-
+export { Button };
