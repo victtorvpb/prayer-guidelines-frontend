@@ -23,6 +23,26 @@ pnpm preview
 pnpm lint
 ```
 
+## Deploy na Vercel
+
+Este projeto ja esta pronto para deploy na Vercel com fallback de rotas para SPA (`react-router-dom`).
+
+1. Suba o projeto para o GitHub.
+2. No painel da Vercel, clique em `Add New > Project`.
+3. Importe o repositorio e mantenha as configuracoes detectadas:
+   - Install Command: `pnpm install`
+   - Build Command: `pnpm build`
+   - Output Directory: `dist`
+4. Clique em `Deploy`.
+
+Deploy via CLI (opcional):
+
+```bash
+pnpm add -g vercel
+vercel
+vercel --prod
+```
+
 ## Vite Plugins
 
 Currently, two official plugins are available:
