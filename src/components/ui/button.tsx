@@ -101,14 +101,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     if (asChild) {
       return <Slot ref={ref} {...props} />;
     }
-    return (
-      <BaseButton
-        ref={ref}
-        $variant={variant}
-        $size={size}
-        {...(props as any)}
-      />
-    );
+    return <BaseButton ref={ref} $variant={variant} $size={size} {...props} />;
   },
 );
 Button.displayName = "Button";

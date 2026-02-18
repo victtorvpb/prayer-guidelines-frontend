@@ -13,8 +13,8 @@ export interface PrayerGuidelinesFormProps {
   layoutMode: LayoutMode;
   hasAnyContent: boolean;
   pautaRefs: React.MutableRefObject<Record<number, HTMLTextAreaElement | null>>;
-  pautaWarningIndexRef: React.MutableRefObject<Record<number, number>>;
-  versiculoWarningIndexRef: React.MutableRefObject<Record<number, number>>;
+  pautaWarningIndices: Record<number, number>;
+  versiculoWarningIndices: Record<number, number>;
   onUpdateItem: (
     id: number,
     field: "pauta" | "versiculo",
@@ -32,8 +32,8 @@ export function PrayerGuidelinesForm({
   layoutMode,
   hasAnyContent,
   pautaRefs,
-  pautaWarningIndexRef,
-  versiculoWarningIndexRef,
+  pautaWarningIndices,
+  versiculoWarningIndices,
   onUpdateItem,
   onRemoveItem,
   onAddItem,
@@ -57,6 +57,8 @@ export function PrayerGuidelinesForm({
               $active={layoutMode === "combined"}
               onClick={() => onLayoutModeChange("combined")}
               title="Layout mode: Juntos"
+              aria-label="Layout juntos"
+              aria-pressed={layoutMode === "combined"}
             >
               Juntos
             </S.LayoutButton>
@@ -65,6 +67,8 @@ export function PrayerGuidelinesForm({
               $active={layoutMode === "sequential"}
               onClick={() => onLayoutModeChange("sequential")}
               title="Layout mode: Sequencial"
+              aria-label="Layout sequencial"
+              aria-pressed={layoutMode === "sequential"}
             >
               Sequencial
             </S.LayoutButton>
@@ -76,9 +80,9 @@ export function PrayerGuidelinesForm({
           const number = index + 1;
           const pautaLength = item.pauta.trim().length;
           const versiculoLength = item.versiculo.trim().length;
-          const pautaWarningIndex = pautaWarningIndexRef.current[item.id] ?? 0;
+          const pautaWarningIndex = pautaWarningIndices[item.id] ?? 0;
           const versiculoWarningIndex =
-            versiculoWarningIndexRef.current[item.id] ?? 0;
+            versiculoWarningIndices[item.id] ?? 0;
           const pautaWarning =
             pautaLength > PAUTA_LIMIT
               ? getPautaWarning(pautaWarningIndex)

@@ -28,14 +28,19 @@ function PrayerGuidelines() {
   const [theme, setTheme] = useState<Theme>("green");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("combined");
   const pautaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
-  const pautaWarningIndexRef = useRef<Record<number, number>>({});
-  const versiculoWarningIndexRef = useRef<Record<number, number>>({});
+  const [pautaWarningIndices, setPautaWarningIndices] = useState<
+    Record<number, number>
+  >({});
+  const [versiculoWarningIndices, setVersiculoWarningIndices] = useState<
+    Record<number, number>
+  >({});
   const previewRef = useRef<HTMLElement | null>(null);
 
   // Prayer item management
   const addPrayerItem = () => {
     setPrayerItems((current) => {
-      const newId = Math.max(...current.map((item) => item.id)) + 1;
+      const maxId = current.reduce((max, item) => Math.max(max, item.id), 0);
+      const newId = maxId + 1;
       return [...current, { id: newId, pauta: "", versiculo: "" }];
     });
     setNeedsRegenerate(showGenerated);
@@ -47,27 +52,38 @@ function PrayerGuidelines() {
     field: "pauta" | "versiculo",
     value: string,
   ) => {
-    setPrayerItems((current) => {
-      const nextItems = current.map((item) =>
+    setPrayerItems((current) =>
+      current.map((item) =>
         item.id === id ? { ...item, [field]: value } : item,
-      );
-      const isPauta = field === "pauta";
-      const limit = isPauta ? PAUTA_LIMIT : VERSICULO_LIMIT;
-      const warnings = isPauta ? PAUTA_WARNINGS : VERSICULO_WARNINGS;
-      const warningRef = isPauta
-        ? pautaWarningIndexRef
-        : versiculoWarningIndexRef;
-      const trimmedLength = value.trim().length;
+      ),
+    );
 
-      if (trimmedLength > limit) {
-        if (warningRef.current[id] === undefined) {
-          warningRef.current[id] = Math.floor(Math.random() * warnings.length);
+    const trimmedLength = value.trim().length;
+    if (field === "pauta") {
+      setPautaWarningIndices((current) => {
+        const next = { ...current };
+        if (trimmedLength > PAUTA_LIMIT) {
+          if (next[id] === undefined) {
+            next[id] = Math.floor(Math.random() * PAUTA_WARNINGS.length);
+          }
+        } else {
+          delete next[id];
         }
-      } else {
-        delete warningRef.current[id];
-      }
-      return nextItems;
-    });
+        return next;
+      });
+    } else {
+      setVersiculoWarningIndices((current) => {
+        const next = { ...current };
+        if (trimmedLength > VERSICULO_LIMIT) {
+          if (next[id] === undefined) {
+            next[id] = Math.floor(Math.random() * VERSICULO_WARNINGS.length);
+          }
+        } else {
+          delete next[id];
+        }
+        return next;
+      });
+    }
     setNeedsRegenerate(showGenerated);
     setCopyState("idle");
   };
@@ -75,8 +91,18 @@ function PrayerGuidelines() {
   const removePrayerItem = (id: number) => {
     if (prayerItems.length > 1) {
       setPrayerItems((current) => current.filter((item) => item.id !== id));
-      delete pautaWarningIndexRef.current[id];
-      delete versiculoWarningIndexRef.current[id];
+      setPautaWarningIndices((current) => {
+        if (!(id in current)) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+      setVersiculoWarningIndices((current) => {
+        if (!(id in current)) return current;
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
       setNeedsRegenerate(showGenerated);
       setCopyState("idle");
     }
@@ -193,8 +219,8 @@ function PrayerGuidelines() {
               layoutMode={layoutMode}
               hasAnyContent={hasAnyContent}
               pautaRefs={pautaRefs}
-              pautaWarningIndexRef={pautaWarningIndexRef}
-              versiculoWarningIndexRef={versiculoWarningIndexRef}
+              pautaWarningIndices={pautaWarningIndices}
+              versiculoWarningIndices={versiculoWarningIndices}
               onUpdateItem={updatePrayerItem}
               onRemoveItem={removePrayerItem}
               onAddItem={addPrayerItem}

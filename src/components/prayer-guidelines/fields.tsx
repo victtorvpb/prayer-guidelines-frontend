@@ -141,16 +141,32 @@ const PautaField = ({
     <SectionHeader>
       <FieldLabel htmlFor={`pauta-${id}`}>Pauta (mensagens)</FieldLabel>
       <ShortcutRow>
-        <ShortcutButton type="button" onClick={() => onFormat("*")}>
+        <ShortcutButton
+          type="button"
+          onClick={() => onFormat("*")}
+          aria-label="Negrito"
+        >
           *B*
         </ShortcutButton>
-        <ShortcutButton type="button" onClick={() => onFormat("_")}>
+        <ShortcutButton
+          type="button"
+          onClick={() => onFormat("_")}
+          aria-label="Italico"
+        >
           _I_
         </ShortcutButton>
-        <ShortcutButton type="button" onClick={() => onFormat("~")}>
+        <ShortcutButton
+          type="button"
+          onClick={() => onFormat("~")}
+          aria-label="Tachado"
+        >
           ~S~
         </ShortcutButton>
-        <ShortcutButton type="button" onClick={() => onFormat("`")}>
+        <ShortcutButton
+          type="button"
+          onClick={() => onFormat("`")}
+          aria-label="Monoespaco"
+        >
           `M`
         </ShortcutButton>
       </ShortcutRow>

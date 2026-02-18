@@ -32,7 +32,7 @@ export const VERSICULO_WARNINGS = [
   "📖 Versiculo grande. Que tal cortar?",
   "🫣 Ta longo. Vale o resumo?",
   "✂️ Encurta o versiculo pra caber melhor.",
-  "🙃 Passou de 50! Respira e resume.",
+  "🙃 Passou de 100! Respira e resume.",
   "⚡ Direto ao ponto fica mais forte.",
 ] as const;
 

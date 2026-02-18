@@ -9,7 +9,7 @@ export interface PrayerGuidelinesHeaderProps {
 export function PrayerGuidelinesHeader({
   theme,
   onThemeChange,
-}: Omit<PrayerGuidelinesHeaderProps, "layoutMode" | "onLayoutModeChange">) {
+}: PrayerGuidelinesHeaderProps) {
   return (
     <>
       <S.ColorSwitcher>
@@ -18,6 +18,7 @@ export function PrayerGuidelinesHeader({
             type="button"
             $active={theme === "green"}
             onClick={() => onThemeChange("green")}
+            aria-pressed={theme === "green"}
           >
             Verde
           </S.ToggleButton>
@@ -25,6 +26,7 @@ export function PrayerGuidelinesHeader({
             type="button"
             $active={theme === "blue"}
             onClick={() => onThemeChange("blue")}
+            aria-pressed={theme === "blue"}
           >
             Azul
           </S.ToggleButton>
