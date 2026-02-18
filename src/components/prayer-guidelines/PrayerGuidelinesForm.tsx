@@ -4,6 +4,7 @@ import { CONTENT_LIMITS } from "@/lib/constants";
 import { getPautaWarning, getVersiculoWarning } from "@/lib/prayer.utils";
 import { PautaField, VersiculoField } from "./index";
 import type { PrayerItem, LayoutMode } from "@/lib/types";
+import type { MutableRefObject } from "react";
 
 const PAUTA_LIMIT = CONTENT_LIMITS.PAUTA;
 const VERSICULO_LIMIT = CONTENT_LIMITS.VERSICULO;
@@ -12,7 +13,7 @@ export interface PrayerGuidelinesFormProps {
   prayerItems: PrayerItem[];
   layoutMode: LayoutMode;
   hasAnyContent: boolean;
-  pautaRefs: React.MutableRefObject<Record<number, HTMLTextAreaElement | null>>;
+  pautaRefs: MutableRefObject<Record<number, HTMLTextAreaElement | null>>;
   pautaWarningIndices: Record<number, number>;
   versiculoWarningIndices: Record<number, number>;
   onUpdateItem: (

@@ -1,13 +1,14 @@
 import { Copy } from "lucide-react";
 import * as S from "./PrayerGuidelines.styles";
 import type { CopyState } from "@/lib/types";
+import type { RefObject } from "react";
 
 export interface PrayerGuidelinesPreviewProps {
   generated: string;
   copyState: CopyState;
   needsRegenerate: boolean;
   onCopyToClipboard: () => void;
-  previewRef: React.RefObject<HTMLElement | null>;
+  previewRef: RefObject<HTMLElement | null>;
 }
 
 export function PrayerGuidelinesPreview({
