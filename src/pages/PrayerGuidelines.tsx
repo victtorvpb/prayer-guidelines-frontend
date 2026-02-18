@@ -10,7 +10,7 @@ import {
   PAUTA_WARNINGS,
   VERSICULO_WARNINGS,
 } from "@/lib/constants";
-import type { PrayerItem, Theme, LayoutMode, CopyState } from "@/lib/types";
+import type { PrayerItem, LayoutMode, CopyState } from "@/lib/types";
 import { getEmojiNumber } from "@/lib/prayer.utils";
 import * as S from "@/components/prayer-guidelines/PrayerGuidelines.styles";
 
@@ -25,7 +25,7 @@ function PrayerGuidelines() {
   const [showGenerated, setShowGenerated] = useState(false);
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const [needsRegenerate, setNeedsRegenerate] = useState(false);
-  const [theme, setTheme] = useState<Theme>("green");
+  const theme = "green";
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("combined");
   const pautaRefs = useRef<Record<number, HTMLTextAreaElement | null>>({});
   const [pautaWarningIndices, setPautaWarningIndices] = useState<
@@ -210,7 +210,7 @@ function PrayerGuidelines() {
     <S.Page data-theme={theme}>
       <S.BackgroundLayer />
       <S.Container>
-        <PrayerGuidelinesHeader theme={theme} onThemeChange={setTheme} />
+        <PrayerGuidelinesHeader />
 
         <S.Grid $hasPreview={showGenerated && !!generated}>
           <S.Card>

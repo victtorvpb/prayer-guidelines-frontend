@@ -28,7 +28,7 @@ export const Page = styled.div`
   );
   min-height: 100vh;
   position: relative;
-  padding: 24px 12px 28px;
+  padding: 6px 12px 24px;
 
   &[data-theme="blue"] {
     --accent: #2e6fbf;
@@ -69,7 +69,7 @@ export const Container = styled.div`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 14px;
 `;
 
 /* ========================
@@ -79,8 +79,8 @@ export const Container = styled.div`
 export const Header = styled.header`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin-bottom: 0;
   align-items: center;
   text-align: center;
 `;
@@ -151,14 +151,14 @@ export const ToggleGroup = styled.div`
 
 export const ColorSwitcher = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   gap: 8px;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 2px;
 
   @media (max-width: 720px) {
-    margin-bottom: 12px;
+    margin-bottom: 2px;
   }
 `;
 

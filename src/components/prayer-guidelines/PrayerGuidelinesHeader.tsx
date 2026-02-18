@@ -1,39 +1,12 @@
 import * as S from "./PrayerGuidelines.styles";
-import type { Theme } from "@/lib/types";
 
-export interface PrayerGuidelinesHeaderProps {
-  theme: Theme;
-  onThemeChange: (theme: Theme) => void;
-}
-
-export function PrayerGuidelinesHeader({
-  theme,
-  onThemeChange,
-}: PrayerGuidelinesHeaderProps) {
+export function PrayerGuidelinesHeader() {
   return (
     <>
       <S.ColorSwitcher>
         <S.LogoInline>
           <S.LogoImage src="/logo_zion.png" alt="Zion" />
         </S.LogoInline>
-        <S.ToggleGroup role="group" aria-label="Selecionar cor">
-          <S.ToggleButton
-            type="button"
-            $active={theme === "green"}
-            onClick={() => onThemeChange("green")}
-            aria-pressed={theme === "green"}
-          >
-            Verde
-          </S.ToggleButton>
-          <S.ToggleButton
-            type="button"
-            $active={theme === "blue"}
-            onClick={() => onThemeChange("blue")}
-            aria-pressed={theme === "blue"}
-          >
-            Azul
-          </S.ToggleButton>
-        </S.ToggleGroup>
       </S.ColorSwitcher>
       <S.Header>
         <S.Title>Gerador de Pautas de oracao</S.Title>
